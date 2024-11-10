@@ -1,26 +1,25 @@
-const supabase = require('@lib/dbConnect');
+import { supabase } from '@/lib/dbConnect';
+import { NextResponse } from 'next/server';
 
-const create_resource = async (req:any, res:any) => {
-    const resource = req.body;
+export async function POST(req:any, res:any){
+    const resource = await req.json();
     const { resource_name, resource_type, capacity, duration } = resource
-    const uni_id = req.query.unversity
-
+    const id = req.url!.split("api/")[1].split('/')[0]
+    
     try {
         const { data, error } = await supabase
             .from('resource')
-            .insert({ resource_name, resource_type, capacity, duration, uni_id });
+            .insert({ resource_name, resource_type, capacity, duration, uni_id:id });
         
             if (error) {
-                console.error(error)
-                return res.status(500).json({ error_message: error.message , function_name: 'create_resource'})
+                throw error
             }
             
-        res.status(201).json({ data: data , function_name: 'create_resource' });
+        return NextResponse.json({status:201, data: data , function_name: 'create_resource' });
         
     } catch (error:any) {
         console.error(error);
-        res.status(500).json({ error_message: error.message , function_name: 'create_resource' });
+        return NextResponse.json({status:500, error_message: error.message , function_name: 'create_resource' });
     }
 }
 
-export default create_resource;

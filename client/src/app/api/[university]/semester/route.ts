@@ -1,7 +1,8 @@
-const supabase = require('@lib/dbConnect')
+import { supabase } from '@/lib/dbConnect';
+import { NextResponse } from 'next/server';
 
-const create_semester = async (req:any, res:any) => {
-    const semester = req.body
+export async function POST(req:any, res:any){
+    const semester = await req.json()
     const { sem_no, class_id, subject_id, faculty_id } = semester
 
     try {
@@ -11,11 +12,9 @@ const create_semester = async (req:any, res:any) => {
         if (error) {
             throw error;
         }
-        res.status(201).json({ data : data , function_name: 'create_semester' });
+        return NextResponse.json({status : 201, data : data , function_name: 'create_semester' });
     } catch (error:any) {
         console.error(error);
-        res.status(500).json({ error_message: error.message , function_name: 'create_semester' });
+        return NextResponse.json({status :500, error_message: error.message , function_name: 'create_semester' });
     }
 }
-
-export default create_semester

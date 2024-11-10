@@ -1,27 +1,24 @@
-const supabase = require('@lib/dbConnect');
+import { supabase } from '@/lib/dbConnect';
+import { NextResponse } from 'next/server';
 
-const create_class = async (req:any, res:any) => {
-    const class_data = req.body
-    const { class_no, total_batches, student_per_batch, branch_id } = class_data
-
+export async function POST(req:any, res:any){
+    const class_data = await req.json()
+    const { class_no, total_batches, students_per_batch, branch_id } = class_data
     try 
     {
         const { data, error } = await supabase
            .from('class')
-           .insert([{ class_no, total_batches, student_per_batch, branch_id }]);
+           .insert([{ class_no, total_batches, students_per_batch, branch_id }]);
 
         if (error) {
-            console.error(error)
-            return res.status(500).json({ error_message: error.message, function_name: 'create_class' })
+            throw error
         }
         
-        res.status(201).json({data: data, function_name: 'create_class' })
-        } 
-    catch (error:any) 
+        return NextResponse.json({ status : 201, data: data, function_name: 'create_class' })
+        }
+    catch (error:any)
     {
         console.error(error);
-        res.status(500).json({ error_message: error.message, function_name: 'create_class' });
+        return NextResponse.json({status : 500, error_message: error.message, function_name: 'create_class' });
     }
 }
-
-export default create_class;

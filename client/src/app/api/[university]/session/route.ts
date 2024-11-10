@@ -1,7 +1,8 @@
-const supabase = require('@lib/dbConnect')
+import { supabase } from '@/lib/dbConnect';
+import { NextResponse } from 'next/server';
 
-const create_session = async (req:any, res:any) => {
-    const session = req.body
+export async function POST(req:any, res:any){
+    const session = await req.json()
     const { session_sequence, do_nothing, duration, dept_id } = session
 
     try {
@@ -11,11 +12,9 @@ const create_session = async (req:any, res:any) => {
         if (error) {
             throw error;
         }
-        res.status(201).json({ data:data, function_name: 'create_session'});
+        return NextResponse.json({status : 201, data:data, function_name: 'create_session'});
     } catch (error:any) {
         console.error(error);
-        res.status(500).json({ error_message: error.message, function_name: 'create_session' });
+        return NextResponse.json({status : 500, error_message: error.message, function_name: 'create_session' });
     }
 }
-
-export default create_session
